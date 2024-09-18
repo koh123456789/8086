@@ -1,0 +1,157 @@
+	;Book Price
+	WhispersP    DB 1
+    EchP        DB 25
+	LocketP      DB 16
+	WillowP     DB 17
+	RendezvousP  DB 10
+	CrimsonP     DB 12
+	ShadowsP     DB 13
+	MemoriesP    DB 15
+	SerenadeP    DB 19
+	DreamP       DB 13
+
+	Price DB 10,25,16,17,10,12,13,15,19,13
+	
+	;Book left quantity
+   	WhispersQ    DB 155
+	EchQ        DB 288
+	LocketQ      DB 123
+	WillowQ      DB 262
+	RendezvousQ  DB 165
+	CrimsonQ     DB 256
+	ShadowsQ     DB 278
+	MemoriesQ    DB 132
+	SerenadeQ    DB 265
+	DreamQ       DB 164
+
+	LeftQuantity DB 155,288,123,262,165,256,278,132,265,164
+
+
+	;Genre
+	H DB “Horror$”
+	R DB “Romance$”
+	A DB “Adventure$”
+	NF DB “Non-fiction$”
+	E DB “Education$”
+
+	Genre DB R,H,A,E,R,NF,H,R,A,E
+
+
+	;Author
+	KWY DB “Koh Win Yee$”
+	CJY DB “Chiam Jian Yu$”
+	LZY DB “Lau Zi Lin$”
+	LXY DB “Loke Xin Yee$”
+
+	Author DB KWY,KWY,CJY,CYJ,LZY,LZY,LXY,LXY
+
+
+	;Payment method
+	TNG DB "Touch N Go$"
+	CARD DB "Card$"
+	CASH DB "Cash$"
+
+	;Sales
+	SALES DW 10000
+
+	;Account
+	USERNAME DB "LegoGuy$"
+	PASS DW 1234
+	
+	
+	;General Display DATA
+	NL DB 0AH,0DH,"$"
+	PMETHOD DB "Payment Method$"
+	PROMPOPT DB "Enter your selection: $"
+	PINVALID DB "Invalid Input!!!$"
+	QUIT DB "Quit$"
+	ENTAGN DB "Enter again$"
+	DOT DB ". $"
+	
+	;Payment Method DATA
+	PAYMT DB ?
+	TOTALAMOUNT DB ?
+	SEL DB ?
+	SEL2 DB ?
+	
+	;Dummy Data 
+	BUYQ DB 0,9,12,0,2,3,0,0,7,1	;Book Price
+	WhispersP    DB 1
+    EchP        DB 25
+	LocketP      DB 16
+	WillowP     DB 17
+	RendezvousP  DB 10
+	CrimsonP     DB 12
+	ShadowsP     DB 13
+	MemoriesP    DB 15
+	SerenadeP    DB 19
+	DreamP       DB 13
+
+	Price DB 10,25,16,17,10,12,13,15,19,13
+	
+	;Book left quantity
+   	WhispersQ    DB 155
+	EchQ        DB 288
+	LocketQ      DB 123
+	WillowQ      DB 262
+	RendezvousQ  DB 165
+	CrimsonQ     DB 256
+	ShadowsQ     DB 278
+	MemoriesQ    DB 132
+	SerenadeQ    DB 265
+	DreamQ       DB 164
+
+	LeftQuantity DB 155,288,123,262,165,256,278,132,265,164
+
+
+	;Genre
+	H DB “Horror$”
+	R DB “Romance$”
+	A DB “Adventure$”
+	NF DB “Non-fiction$”
+	E DB “Education$”
+
+	Genre DB R,H,A,E,R,NF,H,R,A,E
+
+
+	;Author
+	KWY DB “Koh Win Yee$”
+	CJY DB “Chiam Jian Yu$”
+	LZY DB “Lau Zi Lin$”
+	LXY DB “Loke Xin Yee$”
+
+	Author DB KWY,KWY,CJY,CYJ,LZY,LZY,LXY,LXY
+
+
+	;Payment method
+	TNG DB "Touch N Go$"
+	CARD DB "Card$"
+	CASH DB "Cash$"
+
+	;Sales
+	SALES DW 10000
+
+	;Account
+	USERNAME DB "LegoGuy$"
+	PASS DW 1234
+	
+	
+	;General Display DATA
+	NL DB 0AH,0DH,"$"
+	PMETHOD DB "Payment Method$"
+	PROMPOPT DB "Enter your selection: $"
+	PINVALID DB "Invalid Input!!!$"
+	QUIT DB "Quit$"
+	ENTAGN DB "Enter again$"
+	DOT DB ". $"
+	DASH DB -
+	
+	;Payment Method DATA
+	PAYMT DB ?
+	EACHAMOUNT DB ?
+	TOTALAMOUNT DB ?
+	SEL DB ?
+	SEL2 DB ?
+	
+	;Dummy Data 
+	BUYQ DB 0,9,12,0,2,3,0,0,7,1

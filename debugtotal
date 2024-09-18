@@ -1,0 +1,154 @@
+DISPF PROC
+    ; Preserve registers
+    PUSH AX
+    PUSH BX
+    PUSH CX
+    PUSH DX
+    PUSH DI
+    PUSH SI
+
+    ; The result is something like 23300, representing 233.00
+    MOV AX, result       ; AX = 23300
+
+    ; Get the integer part (e.g., 233)
+    MOV BX, AX           ; BX = 23300
+    DIV HUN              ; Divide by 100 (BX now holds the integer part)
+    
+    ; Display the integer part
+    MOV TAX, AX          ; AX = integer part (233)
+    XOR AX, AX
+    MOV AX, TAX
+    DIV TEN              ; Break down the integer part into individual digits
+    MOV BX, AX           ; BX now has the first digit
+    MOV AH, 02H
+    MOV DL, BL           ; DL = first digit
+    ADD DL, 30H          ; Convert to ASCII
+    INT 21H              ; Display the first digit
+
+    XOR AX, AX
+    MOV AX, BH           ; AX = second digit
+    DIV TEN
+    MOV BX, AX
+    MOV AH, 02H
+    MOV DL, BL
+    ADD DL, 30H
+    INT 21H              ; Display the second digit
+
+    MOV AH, 02H
+    MOV DL, BH
+    ADD DL, 30H
+    INT 21H              ; Display the third digit
+
+    ; Display the decimal point
+    MOV AH, 02H
+    MOV DL, '.'
+    INT 21H
+
+    ; Get the decimal part (e.g., 00)
+    MOV AX, result       ; AX = 23300
+    MOV CX, HUN
+    XOR DX, DX
+    DIV CX               ; AX = integer part, DX = decimal part
+    MOV TAX, DX          ; TAX = decimal part (00)
+
+    ; Display the decimal part (00)
+    MOV AX, TAX
+    DIV TEN
+    MOV BX, AX
+    MOV AH, 02H
+    MOV DL, BL
+    ADD DL, 30H
+    INT 21H              ; Display the first decimal digit (0)
+
+    MOV AH, 02H
+    MOV DL, BH
+    ADD DL, 30H
+    INT 21H              ; Display the second decimal digit (0)
+
+    ; Restore registers
+    POP SI
+    POP DI
+    POP DX
+    POP CX
+    POP BX
+    POP AX
+    RET
+
+DISPF ENDP
+
+
+
+
+
+
+
+DISPF PROC
+    ; Preserve registers
+    PUSH AX
+    PUSH BX
+    PUSH CX
+    PUSH DX
+    PUSH DI
+    PUSH SI
+
+    MOV AX, result       ; AX now holds the value times 100 (e.g., 2530 for 25.30)
+	DIV HUN
+	MOV TAX,AL			;STORE THE 25
+	MOV TBX,AH			;STORE THE 30
+
+	;INTEGER BELOW
+	XOR AX,AX
+	MOV AL,TAX
+	DIV HUN				;AL = 1 ; AH=23  (E.G., 123)
+	MOV BX,AX
+
+	MOV AH,02H
+	MOV DL,BL
+	ADD DL,30H
+	INT 21H
+	
+	XOR AX,AX
+	MOV AL,BH
+	DIV TEN			;AL = 2 ; AH = 3
+	MOV BX,AX
+
+	MOV AH,02H
+	MOV DL,BL
+	ADD DL,30H
+	INT 21H
+
+	MOV AH,02H
+	MOV DL,BH
+	ADD DL,30H
+	INT 21H
+
+	MOV AH,02H
+	MOV DL,'.'
+	INT 21H
+
+	;DECIMAL BELOW
+	XOR AX,AX
+	MOV AL,TBX
+	DIV TEN
+	MOV BX,AX
+
+	MOV AH,02H
+	MOV DL,BL
+	ADD DL,30H
+	INT 21H
+	
+	MOV AH,02H
+	MOV DL,BH
+	ADD DL,30H
+	INT 21H
+
+    ; Restore registers
+    POP SI
+    POP DI
+    POP DX
+    POP CX
+    POP BX
+    POP AX
+    RET
+
+DISPF ENDP

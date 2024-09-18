@@ -1,0 +1,512 @@
+.MODEL SMALL
+.STACK 100
+.DATA
+
+	;Book
+	Whispers    DB "Whispers$",0
+	Echo        DB "Echo$",0
+	Locket      DB "Locket$",0 
+	Willow      DB "Willow$",0
+	Rendezvous  DB "Rendezvous$",0
+	Crimson     DB "Crimson$",0
+	Shadows     DB "Shadows$",0
+	Memories    DB "Memories$",0
+	Serenade    DB "Serenade$",0
+	Dream       DB "Dream$",0
+
+	BOOK DW OFFSET Whispers, OFFSET Echo, OFFSET Locket, OFFSET Willow
+         DW OFFSET Rendezvous, OFFSET Crimson, OFFSET Shadows
+         DW OFFSET Memories, OFFSET Serenade, OFFSET Dream
+
+;Book Price(Floating number)
+	WhispersP    DD 10.5
+    EchP        DD 25.3
+	LocketP      DD 16.0
+	WillowP     DD 17.9
+	RendezvousP  DD 10.5
+	CrimsonP     DD 12.2
+	ShadowsP     DD 13.0
+	MemoriesP    DD 15.4
+	SerenadeP    DD 19.8
+	DreamP       DD 13.9
+
+	Price DD 10.5, 25.3, 16.0, 17.9, 10.5, 12.2, 13.0, 15.4, 19.8, 13.9
+
+	;Book left quantity
+   	WhispersQ    DW 155
+	EchQ        DW 288
+	LocketQ      DW 123
+	WillowQ      DW 262
+	RendezvousQ  DW 165
+	CrimsonQ     DW 256
+	ShadowsQ     DW 278
+	MemoriesQ    DW 132
+	SerenadeQ    DW 265
+	DreamQ       DW 164
+
+	LeftQuantity DW OFFSET WhispersQ, OFFSET EchQ, OFFSET LocketQ, OFFSET WillowQ
+         DW OFFSET RendezvousQ, OFFSET CrimsonQ, OFFSET ShadowsQ
+         DW OFFSET MemoriesQ, OFFSET SerenadeQ, OFFSET DreamQ
+
+
+	;Genre
+	H DB "Horror$",0
+	R DB "Romance$",0
+	A DB "Adventure$",0
+	NF DB "Non-fiction$",0
+	E DB "Education$",0
+
+	Genre DW OFFSET R,OFFSET H,OFFSET A,OFFSET E,OFFSET R,OFFSET NF,OFFSET H,OFFSET R,OFFSET A,OFFSET E
+
+
+	;Author
+	KWY DB "Koh Win Yee$"
+	CJY DB "Chiam Jian Yu$"
+	LZY DB "Lau Zi Lin$"
+	LXY DB "Loke Xin Yee$"
+
+	Author DW OFFSET KWY,OFFSET KWY,OFFSET CJY,OFFSET CJY,OFFSET LZY,OFFSET LZY,OFFSET LXY,OFFSET LXY
+
+
+	;Payment method
+	TNG DB "Touch N Go$"
+	CARD DB "Card$"
+	CASH DB "Cash$"
+
+	;Sales
+	SALES DW 10000
+
+	;Account
+	USERNAME DB "LegoGuy$"
+	PASS DW 1234
+
+	;floating point display data
+    factor DW 100       ; Scaling factor for displaying
+	result DW 0       ; Define the result variable as a 16-bit word
+	strResult DB 12 DUP('$')  ; Define a buffer for storing the string result
+    tempStr DB 6 DUP('$')    ; Temporary storage for the number conversion
+
+
+	ADDRESS DW ?
+
+	;General Display DATA
+	NL DB 0AH,0DH,"$"
+	PMETHOD DB "Payment Method$"
+	PROMPOPT DB "Enter your selection: $"
+	PINVALID DB "Invalid Input!!!$"
+	QUIT DB "Quit$"
+	ENTAGN DB "Enter again$"
+	DOT DB ". $"
+
+	;Payment Method DATA
+	PAYMT DB ?
+	EACHAMOUNT DD 10 DUP(0.0)
+	TOTALAMOUNT DD 0.0
+	SEL DB ?
+	SEL2 DB ?
+	BOOKN DB "  BOOK NAME : $"
+	BOOKEP DB "  BOOK PRICE : $"
+	BOOKQ DB "   QUANTITY : $"
+	EACHAD DB "  AMOUNT : $"
+	TOTALD DB "  TOTAL AMOUNT : $"
+	
+	;Dummy Data 
+	BUYQ DB 0,9,1,0,2,3,0,0,7,1
+	BOOKC DB 0
+	TEN DB 10
+	HUN DB 100
+	LC DB ?
+	TOTALP DD 10 DUP(0.0)
+
+	;TEMP REGISTERS?
+	TAX DW ?
+	TBX DW ?
+	TCX DW ?
+	TDX DW ?
+	TDI DW ?
+	TSI DW ?
+
+.CODE
+
+MAIN PROC
+	MOV AX,@DATA
+	MOV DS,AX
+
+	    FLDZ
+
+	;Prompt Payment Method
+	MAINP:
+	MOV AH,09H
+	LEA DX,PMETHOD
+	INT 21H
+	
+	LEA DX,NL
+	INT 21H
+	
+	;Option TNG
+	MOV AH,02H
+	MOV DL,1
+	ADD DL,30H
+	INT 21H
+	
+	MOV AH,09H
+	LEA DX,DOT
+	INT 21H
+	
+	LEA DX,TNG
+	INT 21H
+	
+	LEA DX,NL
+	INT 21H
+	
+	;Option CARD
+	MOV AH,02H
+	MOV DL,2
+	ADD DL,30H
+	INT 21H
+	
+	MOV AH,09H
+	LEA DX,DOT
+	INT 21H
+	
+	LEA DX,CARD
+	INT 21H
+	
+	LEA DX,NL
+	INT 21H
+	
+	;Option CASH
+	MOV AH,02H
+	MOV DL,3
+	ADD DL,30H
+	INT 21H
+	
+	MOV AH,09H
+	LEA DX,DOT
+	INT 21H
+	
+	LEA DX,CASH
+	INT 21H
+	
+	LEA DX,NL
+	INT 21H
+	
+	;Prompt User Input
+	LEA DX,PROMPOPT
+	INT 21H
+	
+	MOV AH,01H
+	INT 21H
+	MOV SEL,AL
+	
+	MOV AH,09H
+	
+	;Compare User Input
+	
+	;Check Valid
+	CMP SEL,'1'
+	JE TGO
+	CMP SEL,'2'
+	JE CAD
+	CMP SEL,'3'
+	JE CAH
+	
+	;IF INVALID,PROMPT CONTINUE?
+		;MOV AH,09H
+		LEA DX,NL
+		INT 21H
+		
+		LEA DX,PINVALID
+		INT 21H
+		
+		LEA DX,NL
+		INT 21H
+		
+		;Enter Again?
+		MOV AH,02H
+		MOV DL,'1'
+		INT 21H
+		
+		MOV AH,09H
+		LEA DX,DOT
+		INT 21H
+		
+		LEA DX,ENTAGN
+		INT 21H
+		
+		LEA DX,NL
+		INT 21H
+		
+		;Quit?
+		MOV AH,02H
+		MOV DL,'2'
+		INT 21H
+		
+		MOV AH,09H
+		LEA DX,DOT
+		INT 21H
+		
+		LEA DX,QUIT
+		INT 21H
+		
+		LEA DX,NL
+		INT 21H
+		
+		;PROMT USER INPUT 
+		LEA DX,PROMPOPT
+		INT 21H
+		
+		MOV AH,01H
+		INT 21H	
+		MOV SEL2,AL
+		
+		CMP SEL2,'1'
+		JNE FINISHPM ;QUIT
+		JMP MAINP
+	
+	TGO:
+		;MOV AH,09H
+		LEA DX,NL
+		INT 21H
+		
+		LEA DX,TNG
+		INT 21H
+		JMP FINISHPM
+	
+	CAD:
+		;MOV AH,09H
+		LEA DX,NL
+		INT 21H
+		
+		LEA DX,CARD
+		INT 21H
+		JMP FINISHPM
+	
+	CAH:
+		;MOV AH,09H
+		LEA DX,NL
+		INT 21H
+		
+		LEA DX,CASH
+		INT 21H
+		JMP FINISHPM
+		
+		
+	FINISHPM:
+		;TO CALCULATE TOTAL
+
+MOV ADDRESS,0
+MOV SI,0
+MOV LC,10
+MOV DI,0
+L1:
+
+	CMP BUYQ[DI],0
+	JNE SHT
+
+	JMP AGAIN
+
+	SHT:
+	INC BOOKC
+	MOV AX,0H
+
+	FILD WORD PTR [BUYQ[DI]] ;LOAD QUANTITY
+
+		;MOV BX,DI
+		;MOV DI,ADDRESS
+
+   	FLD DWORD PTR [PRICE[DI]]  ; Load num1 into the FPU stack
+	FMUL
+	FSTP EACHAMOUNT[DI]
+
+		;MOV DI,BX
+		
+	MOV CX,72
+	DASH:
+			MOV AH,02H
+			MOV DL,'-'
+			INT 21H
+			
+	LOOP DASH
+
+; display the quantity, name, and total here
+
+	MOV AH,09H
+	LEA DX,NL
+	INT 21H
+
+	MOV AH,09H 
+	LEA DX,BOOKN	
+	INT 21H
+
+	; Load the pointer to the book name from the BOOK array
+	MOV AH,09H 
+	MOV DX,BOOK[SI] ; DX gets the address of the string to print
+	INT 21H             ; Display the string
+
+	MOV AH,09H 
+	LEA DX,BOOKEP
+	INT 21H
+
+		;MOV BX,DI
+		;MOV DI,ADDRESS
+
+  	FLD DWORD PTR [PRICE[DI]]  ; Load num1 into the FPU stack
+
+		;MOV DI,BX
+
+    FILD WORD PTR [factor] ; Load factor
+    FMUL                  ; Multiply result by factor to scale
+    FISTP result          ; Store integer part in result
+	 
+	CALL DISPF
+
+	;;;;;;;
+
+	MOV AH,09H 
+	LEA DX,BOOKQ
+	INT 21H
+
+	MOV AX,0H
+	MOV AL,BUYQ[DI]
+	DIV TEN
+	MOV BX,AX
+
+	MOV AH,02H
+	MOV DL,BL
+	ADD DL,30H
+	INT 21H
+
+	MOV AH,02H
+	MOV DL,BH
+	ADD DL,30H
+	INT 21H
+
+	MOV AH,09H 
+	LEA DX,EACHAD
+	INT 21H
+
+		;MOV BX,DI
+		;MOV DI,ADDRESS
+
+  	FLD DWORD PTR [EACHAMOUNT[DI]]  ; Load num1 into the FPU stack
+
+
+
+  	FLD DWORD PTR [TOTALAMOUNT]
+
+ 	FADD
+
+	FSTP DWORD PTR [TOTALAMOUNT]    ; Store the result back into TOTALAMOUNT
+
+	FLD DWORD PTR [EACHAMOUNT[DI]]  ; Load num1 into the FPU stack
+	FILD WORD PTR [factor] ; Load factor
+	FMUL
+	FISTP result          ; Store integer part in result
+	 
+	CALL DISPF
+
+	;MOV DI,BX
+	;;;;
+
+	MOV AH,09H
+	LEA DX,NL
+	INT 21H
+
+	AGAIN:
+
+		ADD SI,2
+		INC DI
+		MOV BX,4
+		ADD ADDRESS,BX
+	
+		DEC LC
+		CMP LC,0
+		JE FINISH
+	
+	JMP L1
+
+	FINISH:
+
+	; Store total amount in TOTALAMOUNT
+	MOV DI,0
+	FLD DWORD PTR [TOTALAMOUNT] 
+    FSTP DWORD PTR [TOTALP[DI]]
+
+	MOV AH,09H 
+	LEA DX,TOTALD
+	INT 21H
+
+	; Display the total amount
+	FLD DWORD PTR [TOTALP[DI]] 
+	FILD WORD PTR [factor] ; Load factor
+    FMUL                  ; Multiply result by factor to scale
+    FISTP result          ; Store integer part in result
+	 
+	CALL DISPF
+
+	MOV AX,4C00H
+	INT 21H
+MAIN ENDP
+
+DISPF PROC
+    ; Preserve registers
+    PUSH AX
+    PUSH BX
+    PUSH CX
+    PUSH DX
+	PUSH DI
+    PUSH SI
+
+    ; Load the result into AX
+    MOV AX, result
+    
+    ; Convert integer part
+    XOR CX, CX              ; Clear CX (counter)
+    MOV BX, 10              ; Divisor (10)
+
+convertLoop:
+    XOR DX, DX              ; Clear DX before division
+    DIV BX                  ; Divide AX by 10
+    ADD DL, '0'             ; Convert remainder to ASCII
+    PUSH DX                 ; Store character on stack
+    INC CX                  ; Increment counter
+    OR AX, AX               ; Check if AX is zero
+    JNZ convertLoop         ; If not, loop
+
+    ; Insert the decimal point in the correct place
+    ; Initialize string and store it in `strResult`
+    MOV DI, OFFSET strResult
+
+	MOV SI, SP            ; Store the stack pointer in SI
+    MOV AL, [SI]          ; Load the value at the top of the stack into AL
+    ADD SP, 2             ; Adjust the stack pointer manually (pop equivalent)
+    MOV [DI], AL          ; Store AL into the string
+    INC DI                ; Move to the next character in the string
+
+outputLoop:
+    POP AX                  ; Pop character from stack
+    MOV [SI], AL            ; Store in string
+    INC SI                  ; Move to next character
+    LOOP outputLoop         ; Repeat for all characters
+
+    MOV BYTE PTR [DI], '$' ; Null terminator for INT 21h function 09h
+
+    ; Display the string
+    MOV DX, OFFSET strResult
+    MOV AH, 09H
+    INT 21H                 ; Display the string
+
+    ; Restore registers
+    POP SI
+	POP DI
+    POP DX
+    POP CX
+    POP BX
+    POP AX
+    RET
+DISPF ENDP
+
+
+END MAIN
+
